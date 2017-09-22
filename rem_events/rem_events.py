@@ -84,15 +84,15 @@ class REMRspChannelStatus(events.EventBase):
 
 class REMGetChannelStatusByArea(events.EventBase):
 	'''
-	Request information for channel status for a given rectangle area ((urx,ury),(drx,dry)), duty cycle threshold and timespan
+	Request information for channel status for a given rectangle area ((ulx,uly),(drx,dry)), duty cycle threshold and timespan
 	'''
-	def __init__(self, channel, threshold, timespan, urx, ury, drx, dry):
+	def __init__(self, channel, threshold, timespan, ulx, uly, drx, dry):
 		super().__init__()
 		self.channel = channel
 		self.threshold = threshold
 		self.timespan = timespan
-		self.urx = urx
-		self.ury = ury
+		self.ulx = ulx
+		self.uly = uly
 		self.drx = drx
 		self.dry = dry
 
@@ -100,11 +100,11 @@ class REMRspChannelStatusByArea(events.EventBase):
 	'''
 	Response information for channel status in a given rectangle area --> status: (0--> free, 1--> ocupied)
 	'''
-	def __init__(self, channel, urx, ury, drx, dry, status):
+	def __init__(self, channel, ulx, uly, drx, dry, status):
 		super().__init__()
 		self.channel = channel
-		self.urx = urx
-		self.ury = ury
+		self.ulx = ulx
+		self.uly = uly
 		self.drx = drx
 		self.dry = dry
 		self.status = status
@@ -144,7 +144,7 @@ class REMRspAllChannelsStatusByDevice(events.EventBase):
 	'''
 	Response information for all channels status for a given device --> status: list of tuple (channel, channel status) (0--> free, 1--> ocupied)
 	'''
-	def __init__(self, channel, status):
+	def __init__(self, rx_addr, status):
 		super().__init__()
 		self.rx_addr = rx_addr
 		self.status = status
@@ -162,7 +162,7 @@ class REMRspAllChannelsStatus(events.EventBase):
 	'''
 	Response information for all channels status --> status: list of tuple (channel, channel status) (0--> free, 1--> ocupied)
 	'''
-	def __init__(self, channel, status):
+	def __init__(self, status):
 		super().__init__()
 		self.status = status
 
@@ -192,8 +192,8 @@ class REMGetDutyCycleByArea(events.EventBase):
 		super().__init__()
 		self.channel = channel
 		self.timespan = timespan
-		self.ulx = urx
-		self.uly = ury
+		self.ulx = ulx
+		self.uly = uly
 		self.drx = drx
 		self.dry = dry
 
@@ -204,8 +204,8 @@ class REMRspDutyCycleByArea(events.EventBase):
 	def __init__(self, channel, ulx, uly, drx, dry, dc):
 		super().__init__()
 		self.channel = channel
-		self.urx = urx
-		self.ury = ury
+		self.ulx = ulx
+		self.uly = uly
 		self.drx = drx
 		self.dry = dry
 		self.dc = dc
@@ -236,6 +236,7 @@ class REMGetDutyCycleAllChannelsByDevice(events.EventBase):
 	'''
 	def __init__(self, channel, rx_add, timespan):
 		super().__init__()
+		self.channel = channel
 		self.rx_add = rx_add
 		self.timespan = timespan
 
@@ -245,7 +246,7 @@ class REMRspDutyCycleAllChannelsByDevice(events.EventBase):
 	'''
 	def __init__(self, rx_add, dc):
 		super().__init__()
-		self.rx_add = channel
+		self.rx_add = rx_add
 		self.dc = dc
 
 class REMGetDutyCycleAllChannels(events.EventBase):
@@ -296,12 +297,13 @@ class REMGetEstimatedTXLocation(events.EventBase):
 		super().__init__()
 		self.addr = addr
 		self.timespan = timespan
-		self.nx = nx
-		self.ny = ny
 		self.ulx = ulx
 		self.uly = uly
 		self.drx = drx
 		self.dry = dry
+		self.nx = nx
+		self.ny = ny
+		self.nz = nz
 
 class REMRspEstimatedTXLocation(events.EventBase):
 	'''
@@ -346,7 +348,7 @@ class REMGetAllAPStatistics(events.EventBase):
 	'''
 	Request average statistics from all active APs in a given timespan
 	'''
-	def __init__(self, timespan):
+	def __init__(self, timespan = 1):
 		super().__init__()
 		self.timespan = timespan
 
@@ -362,7 +364,7 @@ class REMGetDegradedAPsBasedOnRetries(events.EventBase):
 	'''
 	Request degraded APs based on retries threshold in a given timespan
 	'''
-	def __init__(self, timespan, retries_threshold):
+	def __init__(self, timespan=1, retries_threshold=10):
 		super().__init__()
 		self.timespan = timespan
 		self.retries_threshold = retries_threshold
